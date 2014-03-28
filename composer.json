@@ -1,0 +1,15 @@
+{
+    "name": "berny/flow",
+    "description": "Command line tool for gitflow-like workflow",
+    "minimum-stability": "stable",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Berny Cantos",
+            "email": "be@rny.cc"
+        }
+    ],
+    "require": {
+        "php": "~5.3"
+    }
+}

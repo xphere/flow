@@ -11,6 +11,7 @@
 
 namespace Berny\Flow\Console;
 
+use Berny\Flow\Command;
 use Berny\Flow\Flow;
 use Symfony\Component\Console;
 
@@ -22,5 +23,15 @@ class Application extends Console\Application
     public function __construct()
     {
         parent::__construct('flow', Flow::VERSION);
+    }
+
+    /**
+     * Add commands
+     */
+    protected function getDefaultCommands()
+    {
+        $commands = parent::getDefaultCommands();
+
+        return $commands;
     }
 }

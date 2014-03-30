@@ -14,4 +14,20 @@ namespace Berny\Flow;
 class Flow
 {
     const VERSION = '@package_version@';
+
+    public function startFeature($featureName)
+    {
+        $branchName = $this->featureBranchName($featureName);
+        $this->createBranch($branchName, $from = 'dev');
+    }
+
+    protected function featureBranchName($featureName)
+    {
+        return 'feature-' . $featureName;
+    }
+
+    protected function createBranch($branchName, $from)
+    {
+        exec('git branch ' . escapeshellarg($branchName) . ' ' . escapeshellarg($from));
+    }
 }

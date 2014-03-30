@@ -30,6 +30,7 @@ class StartFeatureCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $feature = $input->getArgument('featureName');
+        $this->getFlow()->startFeature($feature);
         $output->writeln('<info>Feature</info> started: <comment>' . $feature . '</comment>');
     }
 }

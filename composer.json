@@ -9,7 +9,11 @@
             "email": "be@rny.cc"
         }
     ],
+    "autoload": {
+        "psr-0": { "Berny\\Flow": "src/" }
+    },
     "require": {
-        "php": "~5.3"
+        "php": "~5.3",
+        "symfony/console": "~2.3"
     }
 }

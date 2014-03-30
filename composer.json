@@ -1,0 +1,19 @@
+{
+    "name": "berny/flow",
+    "description": "Command line tool for gitflow-like workflow",
+    "minimum-stability": "stable",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Berny Cantos",
+            "email": "be@rny.cc"
+        }
+    ],
+    "autoload": {
+        "psr-0": { "Berny\\Flow": "src/" }
+    },
+    "require": {
+        "php": "~5.3",
+        "symfony/console": "~2.3"
+    }
+}

@@ -13,6 +13,7 @@ namespace Berny\Flow\Console;
 
 use Berny\Flow\Command;
 use Berny\Flow\Flow;
+use Berny\Flow\Git\Git;
 use Symfony\Component\Console;
 
 /**
@@ -20,9 +21,21 @@ use Symfony\Component\Console;
  */
 class Application extends Console\Application
 {
+    protected $git;
+    protected $flow;
+
     public function __construct()
     {
         parent::__construct('flow', Flow::VERSION);
+    }
+
+    public function getFlow()
+    {
+        if (null === $this->flow) {
+            $this->flow = new Flow($this->getGit());
+        }
+
+        return $this->flow;
     }
 
     /**
@@ -32,7 +45,18 @@ class Application extends Console\Application
     {
         $commands = parent::getDefaultCommands();
         $commands[] = new Command\VersionCommand();
+        $commands[] = new Command\StartFeatureCommand();
 
         return $commands;
     }
+
+    protected function getGit()
+    {
+        if (null === $this->git) {
+            $this->git = new Git();
+        }
+
+        return $this->git;
+    }
+
 }

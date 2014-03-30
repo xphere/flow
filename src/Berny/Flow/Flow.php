@@ -11,7 +11,35 @@
 
 namespace Berny\Flow;
 
+use Berny\Flow\Git\Git;
+
 class Flow
 {
     const VERSION = '@package_version@';
+
+    protected $git;
+
+    public function __construct(Git $git)
+    {
+        $this->git = $git;
+    }
+
+    public function startFeature($featureName, $andCheckout)
+    {
+        $branchName = $this->featureBranchName($featureName);
+        $this->git->createBranch($branchName, $basedAt = 'dev');
+        if ($andCheckout) {
+            $this->selectBranch($branchName);
+        }
+    }
+
+    public function selectBranch($branchName)
+    {
+        $this->git->checkoutBranch($branchName);
+    }
+
+    protected function featureBranchName($featureName)
+    {
+        return 'feature-' . $featureName;
+    }
 }

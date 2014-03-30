@@ -43,6 +43,7 @@ class Application extends Console\Application
     {
         $commands = parent::getDefaultCommands();
         $commands[] = new Command\VersionCommand();
+        $commands[] = new Command\StartFeatureCommand();
 
         return $commands;
     }

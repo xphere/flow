@@ -29,9 +29,7 @@ class Git
 
     public function createBranch($branchName, $basedAt)
     {
-        $process = $this->run('branch', $branchName, $basedAt);
-
-        return $process->isSuccessful();
+        $this->run('branch', $branchName, $basedAt);
     }
 
     protected function run()
@@ -41,6 +39,9 @@ class Git
             ->getProcess();
 
         $process->run();
+        if (!$process->isSuccessful()) {
+            throw new \RuntimeException($process->getErrorOutput());
+        }
 
         return $process;
     }

@@ -31,6 +31,7 @@ class Application extends Console\Application
     protected function getDefaultCommands()
     {
         $commands = parent::getDefaultCommands();
+        $commands[] = new Command\VersionCommand();
 
         return $commands;
     }

@@ -20,9 +20,20 @@ use Symfony\Component\Console;
  */
 class Application extends Console\Application
 {
+    protected $flow;
+
     public function __construct()
     {
         parent::__construct('flow', Flow::VERSION);
+    }
+
+    public function getFlow()
+    {
+        if (null === $this->flow) {
+            $this->flow = new Flow();
+        }
+
+        return $this->flow;
     }
 
     /**

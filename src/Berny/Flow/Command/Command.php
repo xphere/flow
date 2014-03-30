@@ -15,4 +15,8 @@ use Symfony\Component\Console\Command\Command as BaseCommand;
 
 abstract class Command extends BaseCommand
 {
+    public function getFlow()
+    {
+        return $this->getApplication()->getFlow();
+    }
 }

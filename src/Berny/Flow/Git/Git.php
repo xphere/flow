@@ -32,6 +32,11 @@ class Git
         $this->run('branch', $branchName, $basedAt);
     }
 
+    public function checkoutBranch($branchName)
+    {
+        $this->run('checkout', $branchName);
+    }
+
     protected function run()
     {
         $process = $this->processBuilder

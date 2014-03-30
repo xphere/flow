@@ -24,10 +24,18 @@ class Flow
         $this->git = $git;
     }
 
-    public function startFeature($featureName)
+    public function startFeature($featureName, $andCheckout)
     {
         $branchName = $this->featureBranchName($featureName);
         $this->git->createBranch($branchName, $basedAt = 'dev');
+        if ($andCheckout) {
+            $this->selectBranch($branchName);
+        }
+    }
+
+    public function selectBranch($branchName)
+    {
+        $this->git->checkoutBranch($branchName);
     }
 
     protected function featureBranchName($featureName)

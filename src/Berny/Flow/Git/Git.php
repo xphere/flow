@@ -17,6 +17,10 @@ class Git
 {
     protected $processBuilder;
 
+    const GLOBAL_SCOPE = 'global';
+    const LOCAL_SCOPE  = 'local';
+    const SYSTEM_SCOPE = 'system';
+
     public function __construct(ProcessBuilder $processBuilder = null)
     {
         if (null === $processBuilder) {
@@ -35,6 +39,18 @@ class Git
     public function checkoutBranch($branchName)
     {
         $this->run('checkout', $branchName);
+    }
+
+    public function getConfig($configName, $scope = self::LOCAL_SCOPE)
+    {
+        return $this->run('config', '--get', $configName, "--{$scope}")
+                    ->getOutput();
+    }
+
+    public function setConfig($configName, $value, $scope = self::LOCAL_SCOPE)
+    {
+        return $this->run('config', '--set', $configName, "--{$scope}")
+                    ->getOutput();
     }
 
     protected function run()

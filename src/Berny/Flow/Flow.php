@@ -39,6 +39,10 @@ class Flow
 
     public function checkoutBranch($branchName)
     {
+        if (!$this->git->hasBranch($branchName)) {
+            throw new \InvalidArgumentException("Branch {$branchName} does not exist");
+        }
+
         $this->git->checkoutBranch($branchName);
     }
 

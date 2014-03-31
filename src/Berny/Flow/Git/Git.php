@@ -31,6 +31,12 @@ class Git
         $this->processBuilder = $processBuilder;
     }
 
+    public function hasBranch($branchName)
+    {
+        return $this->run('show-ref', '--verify', "refs/heads/{$branchName}")
+                    ->isSuccessful();
+    }
+
     public function currentBranch()
     {
         return $this->run('rev-parse', '--abbrev-ref', 'HEAD')

@@ -39,8 +39,10 @@ class Git
 
     public function currentBranch()
     {
-        return $this->run('rev-parse', '--abbrev-ref', 'HEAD')
-                    ->getOutput();
+        return trim(
+            $this->run('rev-parse', '--abbrev-ref', 'HEAD')
+                    ->getOutput()
+        );
     }
 
     public function createBranch($branchName, $basedAt)

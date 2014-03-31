@@ -43,6 +43,10 @@ class Flow
             throw new \InvalidArgumentException("Branch {$branchName} does not exist");
         }
 
+        if ($branchName === $this->git->currentBranch()) {
+            throw new \RuntimeException("Already on '{$branchName}'");
+        }
+
         $this->git->checkoutBranch($branchName);
     }
 

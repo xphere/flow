@@ -17,7 +17,10 @@ class Flow
 {
     const VERSION = '@package_version@';
 
+    const FEATURE_PREFIX = 'flow.prefix.feature';
+
     protected $git;
+    protected $config = array();
 
     public function __construct(Git $git)
     {
@@ -38,8 +41,38 @@ class Flow
         $this->git->checkoutBranch($branchName);
     }
 
+    public function getFeaturePrefix()
+    {
+        return $this->getConfig(self::FEATURE_PREFIX, 'feature-');
+    }
+
+    public function setFeaturePrefix($value)
+    {
+        return $this->setConfig(self::FEATURE_PREFIX, $value);
+    }
+
+    protected function getConfig($configName, $default = null)
+    {
+        if (!array_key_exists($configName, $this->config)) {
+            $result = $this->git->getConfig($configName);
+            $this->config[$configName] = $result;
+        } else {
+            $result = $this->config[$configName];
+        }
+
+        return null === $result ? $default : $result;
+    }
+
+    protected function setConfig($configName, $value)
+    {
+        if (!array_key_exists($configName, $this->config) || $this->config[$configName] !== $value) {
+            $this->git->setConfig($configName, $value);
+            $this->config[$configName] = $value;
+        }
+    }
+
     protected function featureBranchName($featureName)
     {
-        return 'feature-' . $featureName;
+        return $this->getFeaturePrefix() . $featureName;
     }
 }

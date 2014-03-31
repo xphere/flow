@@ -33,13 +33,23 @@ class Flow
         $branchName = $this->featureBranchName($featureName);
         $this->git->createBranch($branchName, $basedAt = 'dev');
         if ($andCheckout) {
-            $this->selectBranch($branchName);
+            $this->checkoutBranch($branchName);
         }
     }
 
-    public function selectBranch($branchName)
+    public function checkoutBranch($branchName)
     {
+        if (!$this->git->hasBranch($branchName)) {
+            throw new \InvalidArgumentException("Branch {$branchName} does not exist");
+        }
+
+        if ($branchName === $this->git->currentBranch()) {
+            throw new \RuntimeException("Already on '{$branchName}'");
+        }
+
+        $this->git->stashSave();
         $this->git->checkoutBranch($branchName);
+        $this->git->stashPop();
     }
 
     public function isGitRepository()

@@ -28,11 +28,11 @@ class InitCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $formatter = $this->getHelperSet()->get('formatter');
+        $formatter = $this->getHelper('formatter');
         $output->writeln($formatter->formatBlock(array(
             'Flow init',
             'Initializing Flow in current repository'
-        ), 'bg=cyan;fg=white', true));
+        ), 'bg=blue;fg=white', true));
         $output->writeln('');
 
         $flow = $this->getFlow();
@@ -41,14 +41,14 @@ class InitCommand extends Command
         $flow->setFeaturePrefix($featurePrefix);
 
         $output->writeln('');
-        $output->writeln('<info><comment>Flow</comment> was successfully configured</info>.');
+        $output->writeln('<info><comment>Flow</comment> was successfully configured</info>');
     }
 
     protected function ask(OutputInterface $output, $question, $default = null)
     {
-        $question = "<question>{$question}?</question> ";
+        $question = "<info>{$question}?</info> ";
         if (null !== $default) {
-            $question = "{$question}[<comment>{$default}</comment>] ";
+            $question .= "[<comment>{$default}</comment>] ";
         }
 
         return $this->getHelper('dialog')->ask($output, $question, $default);

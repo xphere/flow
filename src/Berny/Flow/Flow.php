@@ -17,6 +17,7 @@ class Flow
 {
     const VERSION = '@package_version@';
 
+    const INITIALIZED = 'flow.initialized';
     const FEATURE_PREFIX = 'flow.prefix.feature';
 
     protected $git;
@@ -44,6 +45,16 @@ class Flow
     public function isGitRepository()
     {
         return $this->git->isRepository();
+    }
+
+    public function isInitialized()
+    {
+        return $this->getConfig(self::INITIALIZED);
+    }
+
+    public function markAsInitialized()
+    {
+        return $this->setConfig(self::INITIALIZED, true);
     }
 
     public function getFeaturePrefix()

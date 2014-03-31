@@ -17,6 +17,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class InitCommand extends Command
 {
+    public function isEnabled()
+    {
+        return true;
+    }
+
     protected function configure()
     {
         $this
@@ -48,6 +53,8 @@ class InitCommand extends Command
         $defaultFeaturePrefix = $flow->getFeaturePrefix();
         $featurePrefix = $this->ask($output, 'Feature prefix', $defaultFeaturePrefix);
         $flow->setFeaturePrefix($featurePrefix);
+
+        $flow->markAsInitialized();
 
         $output->writeln('');
         $output->writeln('<info><comment>Flow</comment> was successfully configured</info>');

@@ -47,6 +47,7 @@ class Application extends Console\Application
         $commands[] = new Command\VersionCommand();
         $commands[] = new Command\StartFeatureCommand();
         $commands[] = new Command\InitCommand();
+        $commands[] = new Command\CheckoutCommand();
 
         return $commands;
     }

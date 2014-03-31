@@ -61,7 +61,8 @@ class Git
 
     public function isRepository()
     {
-        return $this->run('rev-parse', '--abbrev-ref', 'HEAD')->isSuccessful();
+        return $this->run('rev-parse', '--abbrev-ref', 'HEAD')
+                    ->isSuccessful();
     }
 
     public function getConfig($configName, $scope = self::LOCAL_SCOPE)
@@ -75,6 +76,60 @@ class Git
     public function setConfig($configName, $value, $scope = self::LOCAL_SCOPE)
     {
         $this->runAndCheck('config', "--{$scope}", $configName, $value);
+
+        return $this;
+    }
+
+    public function stashSave()
+    {
+        if (!$this->hasCleanIndex()) {
+            $this->commit('flow:stash:indexed');
+        }
+        if (!$this->hasCleanWorkingTree()) {
+            $this->addAll()->commit('flow:stash:modified');
+        }
+    }
+
+    public function stashPop()
+    {
+        if ($this->getCommitMessage() === 'flow:stash:modified') {
+            $this->run('reset', 'HEAD^');
+        }
+        if ($this->getCommitMessage() === 'flow:stash:indexed') {
+            $this->run('reset', 'HEAD^', '--soft');
+        }
+    }
+
+    public function getCommitMessage($rev = 'HEAD')
+    {
+        return trim(
+            $this->runAndCheck('show', '-s', '--format=%s', $rev)
+                ->getOutput()
+        );
+    }
+
+    public function hasCleanIndex()
+    {
+        return $this->run('diff-index', '--cached', '--quiet', 'HEAD')
+                    ->isSuccessful();
+    }
+
+    public function hasCleanWorkingTree()
+    {
+        return $this->run('diff-files', '--quiet', '--')
+                    ->isSuccessful();
+    }
+
+    public function commit($message)
+    {
+        $this->runAndCheck('commit', '-q', '--no-verify', '-m', $message);
+
+        return $this;
+    }
+
+    public function addAll()
+    {
+        $this->runAndCheck('add', '-A');
 
         return $this;
     }

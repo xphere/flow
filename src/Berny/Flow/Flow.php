@@ -47,7 +47,9 @@ class Flow
             throw new \RuntimeException("Already on '{$branchName}'");
         }
 
+        $this->git->stashSave();
         $this->git->checkoutBranch($branchName);
+        $this->git->stashPop();
     }
 
     public function isGitRepository()

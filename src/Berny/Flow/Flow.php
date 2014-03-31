@@ -33,11 +33,11 @@ class Flow
         $branchName = $this->featureBranchName($featureName);
         $this->git->createBranch($branchName, $basedAt = 'dev');
         if ($andCheckout) {
-            $this->selectBranch($branchName);
+            $this->checkoutBranch($branchName);
         }
     }
 
-    public function selectBranch($branchName)
+    public function checkoutBranch($branchName)
     {
         $this->git->checkoutBranch($branchName);
     }

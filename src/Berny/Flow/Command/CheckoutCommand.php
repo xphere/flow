@@ -31,7 +31,7 @@ class CheckoutCommand extends Command
     {
         $branch = $input->getArgument('branch');
         $flow = $this->getFlow();
-        $flow->selectBranch($branch);
+        $flow->checkoutBranch($branch);
 
         $output->writeln("Switched to branch '{$branch}'");
     }

@@ -41,6 +41,11 @@ class Flow
         $this->git->checkoutBranch($branchName);
     }
 
+    public function isGitRepository()
+    {
+        return $this->git->isRepository();
+    }
+
     public function getFeaturePrefix()
     {
         return $this->getConfig(self::FEATURE_PREFIX, 'feature-');

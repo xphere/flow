@@ -17,6 +17,10 @@ class Git
 {
     protected $processBuilder;
 
+    const GLOBAL_SCOPE = 'global';
+    const LOCAL_SCOPE  = 'local';
+    const SYSTEM_SCOPE = 'system';
+
     public function __construct(ProcessBuilder $processBuilder = null)
     {
         if (null === $processBuilder) {
@@ -27,14 +31,54 @@ class Git
         $this->processBuilder = $processBuilder;
     }
 
+    public function currentBranch()
+    {
+        return $this->run('rev-parse', '--abbrev-ref', 'HEAD')
+                    ->getOutput();
+    }
+
     public function createBranch($branchName, $basedAt)
     {
-        $this->run('branch', $branchName, $basedAt);
+        $this->runAndCheck('branch', $branchName, $basedAt);
+
+        return $this;
     }
 
     public function checkoutBranch($branchName)
     {
-        $this->run('checkout', $branchName);
+        $this->runAndCheck('checkout', $branchName);
+
+        return $this;
+    }
+
+    public function getConfig($configName, $scope = self::LOCAL_SCOPE)
+    {
+        return trim(
+            $this->run('config', "--{$scope}", '--get', $configName)
+                 ->getOutput()
+        );
+    }
+
+    public function setConfig($configName, $value, $scope = self::LOCAL_SCOPE)
+    {
+        $this->runAndCheck('config', "--{$scope}", $configName, $value);
+
+        return $this;
+    }
+
+    protected function runAndCheck()
+    {
+        $process = $this->processBuilder
+            ->setArguments(func_get_args())
+            ->getProcess();
+
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new \RuntimeException($process->getErrorOutput());
+        }
+
+        return $process;
     }
 
     protected function run()
@@ -44,9 +88,6 @@ class Git
             ->getProcess();
 
         $process->run();
-        if (!$process->isSuccessful()) {
-            throw new \RuntimeException($process->getErrorOutput());
-        }
 
         return $process;
     }

@@ -17,6 +17,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class InitCommand extends Command
 {
+    public function isEnabled()
+    {
+        return true;
+    }
+
     protected function configure()
     {
         $this
@@ -29,16 +34,27 @@ class InitCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $formatter = $this->getHelper('formatter');
+        $flow = $this->getFlow();
+        if (!$flow->isGitRepository()) {
+            $output->writeln($formatter->formatBlock(array(
+                'Flow init',
+                'Current directory must be under control version.'
+            ), 'bg=red;fg=white', true));
+
+            return 1;
+        }
+
         $output->writeln($formatter->formatBlock(array(
             'Flow init',
             'Initializing Flow in current repository'
         ), 'bg=blue;fg=white', true));
         $output->writeln('');
 
-        $flow = $this->getFlow();
         $defaultFeaturePrefix = $flow->getFeaturePrefix();
         $featurePrefix = $this->ask($output, 'Feature prefix', $defaultFeaturePrefix);
         $flow->setFeaturePrefix($featurePrefix);
+
+        $flow->markAsInitialized();
 
         $output->writeln('');
         $output->writeln('<info><comment>Flow</comment> was successfully configured</info>');

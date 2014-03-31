@@ -51,6 +51,11 @@ class Git
         return $this;
     }
 
+    public function isRepository()
+    {
+        return $this->run('rev-parse', '--abbrev-ref', 'HEAD')->isSuccessful();
+    }
+
     public function getConfig($configName, $scope = self::LOCAL_SCOPE)
     {
         return trim(

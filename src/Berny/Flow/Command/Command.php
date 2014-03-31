@@ -19,4 +19,9 @@ abstract class Command extends BaseCommand
     {
         return $this->getApplication()->getFlow();
     }
+
+    public function isEnabled()
+    {
+        return $this->getFlow()->isInitialized();
+    }
 }

@@ -1,0 +1,37 @@
+#!/bin/bash
+
+GITCC_DIR=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
+. "$GITCC_DIR/common"
+
+SAVE_PREFIX="git-cc:save"
+MSG_INDEXED_COMMIT="$SAVE_PREFIX:indexed"
+MSG_MODIFIED_COMMIT="$SAVE_PREFIX:modified"
+
+usage() {
+    echo "Change safely between branches, saving current state"
+    echo ""
+    echo "Usage:"
+    echo "  git change-to <branch-name>"
+    echo ""
+}
+
+main() {
+    if [ -z "$1" ]; then
+        usage
+        exit 1
+    fi
+
+    BRANCH="$1"
+    if ! has_branch "$BRANCH"; then
+        echo Branch "$BRANCH" does not exist
+        exit 1
+    fi
+
+    if [ "$(current_branch)" != "$BRANCH" ]; then
+        store
+        git checkout "$BRANCH"
+        recover
+    fi
+}
+
+main "$@"

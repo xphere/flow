@@ -1,0 +1,54 @@
+#
+# Common functions for git helpers
+#
+
+has_branch() {
+    git show-ref --quiet --verify "refs/heads/$1"
+}
+
+current_branch() {
+    git rev-parse --abbrev-ref "HEAD"
+}
+
+current_rev() {
+    git rev-parse "HEAD"
+}
+
+has_clean_index() {
+    git diff-index --cached --quiet "HEAD"
+}
+
+has_clean_working_tree() {
+    git diff-files --quiet -- && [ -z "$(git ls-files --exclude-standard --others)" ]
+}
+
+get_commit_message() {
+    git show -s --format="%s" "${@:-HEAD}"
+}
+
+unsafe_commit() {
+    git commit --no-verify -q -m "$@"
+}
+
+store() {
+    if ! has_clean_index; then
+        unsafe_commit "$MSG_INDEXED_COMMIT"
+    fi
+
+    if ! has_clean_working_tree; then
+        git add -A
+        unsafe_commit "$MSG_MODIFIED_COMMIT"
+    fi
+}
+
+recover() {
+    local MESSAGE="$(get_commit_message)"
+    if [ "$MSG_MODIFIED_COMMIT" == "$MESSAGE" ]; then
+        git reset HEAD^
+        MESSAGE="$(get_commit_message)"
+    fi
+
+    if [ "$MSG_INDEXED_COMMIT" == "$MESSAGE" ]; then
+        git reset --soft HEAD^
+    fi
+}

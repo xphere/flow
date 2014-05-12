@@ -80,3 +80,16 @@ make_branch() {
     git branch -q -t "$TO" "$FROM"
     echo "$TO"
 }
+
+detect_type() {
+    local BRANCH="${1:-$(current_branch)}"
+
+    for TYPE in feature hotfix; do
+        if [[ $BRANCH = $(config "$(branch_prefix "$TYPE")")* ]]; then
+            echo "$TYPE"
+            return 0;
+        fi
+    done
+
+    return 1
+}

@@ -1,0 +1,73 @@
+#!/bin/bash
+
+GITCC_DIR=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
+. "$GITCC_DIR/common"
+
+main() {
+    header
+    ask_branches
+    ask_branch_prefixes
+}
+
+header() {
+    echo "Setup your current repository to use git-cc helpers"
+    echo "Current repository: $(root_dir)"
+    echo ""
+}
+
+ask() {
+    local QUESTION="$1: "
+    local DEFAULT="$2"
+    local ANSWER=""
+
+    if [ -n "$DEFAULT" ]; then
+        QUESTION="$QUESTION[$DEFAULT] "
+    fi
+
+    while [ -z "$ANSWER" ]; do
+        read -p "$QUESTION" ANSWER
+        if [ -z "$ANSWER" ] && [ -n "$DEFAULT" ]; then
+            ANSWER="$DEFAULT"
+        fi
+    done
+
+    echo $ANSWER
+}
+
+ask_config() {
+    local QUESTION="$1"
+    local CONFIG_KEY="$2"
+    local DEFAULT=$(config "$CONFIG_KEY")
+    if [ -z "$DEFAULT" ]; then
+        DEFAULT="$3"
+    fi
+    VALUE=$(ask "$QUESTION" "$DEFAULT")
+    config "$CONFIG_KEY" "$VALUE"
+}
+
+ask_branch_prefix() {
+    local TYPE="$1"
+    local CONFIG="$(branch_prefix "$TYPE")"
+    local DEFAULT="$2"
+    ask_config "Choose prefix for $TYPE branches" "$CONFIG" "$DEFAULT"
+}
+
+ask_branch() {
+    local TYPE="$1"
+    local CONFIG="$(branch_name "$TYPE")"
+    local DEFAULT="$2"
+    ask_config "Choose name for branch $TYPE" "$CONFIG" "$DEFAULT"
+}
+
+ask_branch_prefixes() {
+    ask_branch_prefix "feature" "feature-"
+    ask_branch_prefix "hotfix"  "hotfix-"
+    ask_branch_prefix "release" "release-"
+}
+
+ask_branches() {
+    ask_branch "dev" "dev"
+    ask_branch "master" "master"
+}
+
+main "$@"

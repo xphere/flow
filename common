@@ -6,6 +6,10 @@ CONFIG_PREFIX="cc"
 CONFIG_BRANCH_PREFIX="prefix"
 CONFIG_BRANCH="branch"
 
+root_dir() {
+    git rev-parse --show-toplevel
+}
+
 has_branch() {
     git show-ref --quiet --verify "refs/heads/$1"
 }

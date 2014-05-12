@@ -3,6 +3,8 @@
 #
 
 CONFIG_PREFIX="cc"
+CONFIG_BRANCH_PREFIX="prefix"
+CONFIG_BRANCH="branch"
 
 has_branch() {
     git show-ref --quiet --verify "refs/heads/$1"
@@ -58,5 +60,19 @@ recover() {
 config() {
     local NAME="$CONFIG_PREFIX.$1"; shift
     git config "$NAME" "$@" 2>/dev/null
+}
 
+branch_prefix() {
+    echo "$CONFIG_BRANCH_PREFIX.$1"
+}
+
+branch_name() {
+    echo "$CONFIG_BRANCH.$1"
+}
+
+make_branch() {
+    local TO="$(config "$(branch_prefix $2)")$1"
+    local FROM="$(config "$(branch_name $3)")"
+    git branch -q -t "$TO" "$FROM"
+    echo "$TO"
 }

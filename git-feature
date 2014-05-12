@@ -1,0 +1,24 @@
+#!/bin/bash
+
+GITCC_DIR=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
+. "$GITCC_DIR/common"
+
+usage() {
+    echo "Start new feature branch"
+    echo ""
+    echo "Usage:"
+    echo "  git feature <feature-name>"
+    echo ""
+}
+
+main() {
+    if [ -z "$1" ]; then
+        usage
+        exit 1
+    fi
+
+    local BRANCH="$(make_branch "$1" feature dev)"
+    git change-to "$BRANCH"
+}
+
+main "$@"

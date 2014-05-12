@@ -2,6 +2,8 @@
 # Common functions for git helpers
 #
 
+CONFIG_PREFIX="cc"
+
 has_branch() {
     git show-ref --quiet --verify "refs/heads/$1"
 }
@@ -51,4 +53,10 @@ recover() {
     if [ "$MSG_INDEXED_COMMIT" == "$MESSAGE" ]; then
         git reset --soft HEAD^
     fi
+}
+
+config() {
+    local NAME="$CONFIG_PREFIX.$1"; shift
+    git config "$NAME" "$@" 2>/dev/null
+
 }

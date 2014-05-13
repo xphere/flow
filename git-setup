@@ -17,7 +17,7 @@ header() {
 
 ask() {
     local QUESTION="$1: "
-    local DEFAULT="$2"
+    local DEFAULT="${2:-$3}"
     local ANSWER=""
 
     if [ -n "$DEFAULT" ]; then
@@ -34,29 +34,22 @@ ask() {
     echo $ANSWER
 }
 
-ask_config() {
-    local QUESTION="$1"
-    local CONFIG_KEY="$2"
-    local DEFAULT=$(config "$CONFIG_KEY")
-    if [ -z "$DEFAULT" ]; then
-        DEFAULT="$3"
-    fi
-    VALUE=$(ask "$QUESTION" "$DEFAULT")
-    config "$CONFIG_KEY" "$VALUE"
-}
-
 ask_branch_prefix() {
     local TYPE="$1"
-    local CONFIG="$(branch_prefix "$TYPE")"
     local DEFAULT="$2"
-    ask_config "Choose prefix for $TYPE branches" "$CONFIG" "$DEFAULT"
+    local CONFIG="$(branch_prefix "$TYPE")"
+    local QUESTION="Choose prefix for $TYPE branches"
+    local ANSWER=$(ask "$QUESTION" "$CONFIG" "$DEFAULT")
+    branch_prefix "$TYPE" "$ANSWER"
 }
 
 ask_branch() {
     local TYPE="$1"
-    local CONFIG="$(branch_name "$TYPE")"
     local DEFAULT="$2"
-    ask_config "Choose name for branch $TYPE" "$CONFIG" "$DEFAULT"
+    local CONFIG="$(branch_name "$TYPE")"
+    local QUESTION="Choose prefix for $TYPE branches"
+    local ANSWER=$(ask "$QUESTION" "$CONFIG" "$DEFAULT")
+    branch_name "$TYPE" "$ANSWER"
 }
 
 ask_branch_prefixes() {

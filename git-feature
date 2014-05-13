@@ -17,8 +17,7 @@ main() {
         exit 1
     fi
 
-    local BRANCH="$(make_branch "$1" feature dev)"
-    git change-to "$BRANCH"
+    new_branch_and_checkout "$1" feature dev
 }
 
 main "$@"

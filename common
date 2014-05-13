@@ -69,30 +69,46 @@ config() {
     git config "$NAME" "$@" 2>/dev/null
 }
 
-branch_prefix() {
-    echo "$CONFIG_BRANCH_PREFIX.$1"
+branch_name() {
+    local TYPE="$1"; shift
+    config "$CONFIG_BRANCH.$TYPE" "$@"
 }
 
-branch_name() {
-    echo "$CONFIG_BRANCH.$1"
+branch_prefix() {
+    local TYPE="$1"; shift
+    config "$CONFIG_BRANCH_PREFIX.$TYPE" "$@"
 }
 
 make_branch() {
-    local TO="$(config "$(branch_prefix $2)")$1"
-    local FROM="$(config "$(branch_name $3)")"
+    local TO="$1"
+    local FROM="$2"
     git branch -q -t "$TO" "$FROM"
-    echo "$TO"
 }
 
 detect_type() {
     local BRANCH="${1:-$(current_branch)}"
 
     for TYPE in feature hotfix; do
-        if [[ $BRANCH = $(config "$(branch_prefix "$TYPE")")* ]]; then
+        if [[ $BRANCH = $(branch_prefix $TYPE)* ]]; then
             echo "$TYPE"
             return 0;
         fi
     done
 
     return 1
+}
+
+new_branch_and_checkout() {
+    local BRANCH="$(branch_prefix ${TYPE:-$2})${NAME:-$1}"
+    local FROM="$(branch_name $3)"
+
+    if ! make_branch "$BRANCH" "$FROM"; then
+        exit 1
+    fi
+
+    if detect_type; then
+        store
+    fi
+
+    git checkout "$BRANCH"
 }

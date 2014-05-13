@@ -1,0 +1,14 @@
+#!/bin/bash
+
+GITCC_DIR=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
+. "$GITCC_DIR/common"
+
+main() {
+    local REV=$(git rev-parse HEAD)
+    recover
+    if [ "$(git rev-parse HEAD)" != "$REV" ]; then
+        echo "State recovered"
+    fi
+}
+
+main "$@"

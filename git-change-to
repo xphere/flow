@@ -3,10 +3,6 @@
 GITCC_DIR=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
 . "$GITCC_DIR/common"
 
-SAVE_PREFIX="git-cc:save"
-MSG_INDEXED_COMMIT="$SAVE_PREFIX:indexed"
-MSG_MODIFIED_COMMIT="$SAVE_PREFIX:modified"
-
 usage() {
     echo "Change safely between branches, saving current state"
     echo ""

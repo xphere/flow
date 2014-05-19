@@ -1,6 +1,15 @@
 #!/bin/bash
 
-GITCC_DIR=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
-. "$GITCC_DIR/lib/common"
+boot() {
+	GITCC_DIR=$(script_dir)
+	. "$GITCC_DIR/lib/common"
 
-load_library "application"
+	load_library "application"
+}
+
+script_dir() {
+    local SOURCE="${@:-${BASH_SOURCE[0]}}"
+    echo $(cd $(dirname "$SOURCE") && pwd)
+}
+
+boot

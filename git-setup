@@ -10,7 +10,7 @@ main() {
 
 header() {
     echo "Setup your current repository to use git-cc helpers"
-    echo "Current repository: $(root_dir)"
+    echo "Current repository: $(git_root_dir)"
     echo ""
 }
 

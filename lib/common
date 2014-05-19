@@ -1,114 +1,16 @@
-#
-# Common functions for git helpers
-#
+#!/bin/bash
 
-CONFIG_PREFIX="cc"
-CONFIG_BRANCH_PREFIX="prefix"
-CONFIG_BRANCH="branch"
-SAVE_PREFIX="git-cc:save"
-MSG_INDEXED_COMMIT="$SAVE_PREFIX:indexed"
-MSG_MODIFIED_COMMIT="$SAVE_PREFIX:modified"
-
-root_dir() {
-    git rev-parse --show-toplevel
+library_init() {
+    local SCRIPT_DIR="$(script_dir "${BASH_SOURCE[0]}")"
+    LIBRARY_DIR="${SCRIPT_DIR#$GITCC_DIR/}"
 }
 
-has_branch() {
-    git show-ref --quiet --verify "refs/heads/$1"
+load() {
+    . "$GITCC_DIR/$@"
 }
 
-current_branch() {
-    git rev-parse --abbrev-ref "HEAD"
+load_library() {
+    load "$LIBRARY_DIR/$1"
 }
 
-current_rev() {
-    git rev-parse "HEAD"
-}
-
-has_clean_index() {
-    git diff-index --cached --quiet "HEAD"
-}
-
-has_clean_working_tree() {
-    git diff-files --quiet -- && [ -z "$(git ls-files --exclude-standard --others)" ]
-}
-
-get_commit_message() {
-    git show -s --format="%s" "${@:-HEAD}"
-}
-
-unsafe_commit() {
-    git commit --no-verify -q -m "$@"
-}
-
-store() {
-    if ! has_clean_index; then
-        unsafe_commit "$MSG_INDEXED_COMMIT"
-    fi
-
-    if ! has_clean_working_tree; then
-        git add -A
-        unsafe_commit "$MSG_MODIFIED_COMMIT"
-    fi
-}
-
-recover() {
-    local MESSAGE="$(get_commit_message)"
-    if [ "$MSG_MODIFIED_COMMIT" == "$MESSAGE" ]; then
-        git reset -q HEAD^
-        MESSAGE="$(get_commit_message)"
-    fi
-
-    if [ "$MSG_INDEXED_COMMIT" == "$MESSAGE" ]; then
-        git reset -q --soft HEAD^
-    fi
-}
-
-config() {
-    local NAME="$CONFIG_PREFIX.$1"; shift
-    git config "$NAME" "$@" 2>/dev/null
-}
-
-branch_name() {
-    local TYPE="$1"; shift
-    config "$CONFIG_BRANCH.$TYPE" "$@"
-}
-
-branch_prefix() {
-    local TYPE="$1"; shift
-    config "$CONFIG_BRANCH_PREFIX.$TYPE" "$@"
-}
-
-make_branch() {
-    local TO="$1"
-    local FROM="$2"
-    git branch -q -t "$TO" "$FROM"
-}
-
-detect_type() {
-    local BRANCH="${1:-$(current_branch)}"
-
-    for TYPE in feature hotfix; do
-        if [[ $BRANCH = $(branch_prefix $TYPE)* ]]; then
-            echo "$TYPE"
-            return 0;
-        fi
-    done
-
-    return 1
-}
-
-new_branch_and_checkout() {
-    local BRANCH="$(branch_prefix ${TYPE:-$2})${NAME:-$1}"
-    local FROM="$(branch_name $3)"
-
-    if ! make_branch "$BRANCH" "$FROM"; then
-        exit 1
-    fi
-
-    if detect_type; then
-        store
-    fi
-
-    git checkout "$BRANCH"
-}
+library_init

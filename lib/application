@@ -1,0 +1,86 @@
+#!/bin/bash
+
+load_library "git"
+
+library_init() {
+    CONFIG_PREFIX="cc"
+    CONFIG_BRANCH_PREFIX="prefix"
+    CONFIG_BRANCH="branch"
+    SAVE_PREFIX="git-cc:save"
+    MSG_INDEXED_COMMIT="$SAVE_PREFIX:indexed"
+    MSG_MODIFIED_COMMIT="$SAVE_PREFIX:modified"
+}
+
+store() {
+    if ! git_has_clean_index; then
+        git_unsafe_commit "$MSG_INDEXED_COMMIT"
+    fi
+
+    if ! git_has_clean_working_tree; then
+        git add -A
+        git_unsafe_commit "$MSG_MODIFIED_COMMIT"
+    fi
+}
+
+recover() {
+    local MESSAGE="$(git_get_commit_message)"
+    if [ "$MSG_MODIFIED_COMMIT" == "$MESSAGE" ]; then
+        git reset -q HEAD^
+        MESSAGE="$(git_get_commit_message)"
+    fi
+
+    if [ "$MSG_INDEXED_COMMIT" == "$MESSAGE" ]; then
+        git reset -q --soft HEAD^
+    fi
+}
+
+config() {
+    local NAME="$CONFIG_PREFIX.$1"; shift
+    git config "$NAME" "$@" 2>/dev/null
+}
+
+branch_name() {
+    local TYPE="$1"; shift
+    config "$CONFIG_BRANCH.$TYPE" "$@"
+}
+
+branch_prefix() {
+    local TYPE="$1"; shift
+    config "$CONFIG_BRANCH_PREFIX.$TYPE" "$@"
+}
+
+make_branch() {
+    local TO="$1"
+    local FROM="$2"
+    git branch -qtu "$TO" "$FROM"
+}
+
+detect_type() {
+    local BRANCH="${1:-$(git_current_branch)}"
+
+    for TYPE in feature hotfix; do
+        if [[ $BRANCH = $(branch_prefix $TYPE)* ]]; then
+            echo "$TYPE"
+            return 0;
+        fi
+    done
+
+    return 1
+}
+
+new_branch_and_checkout() {
+    local BRANCH="$(branch_prefix ${TYPE:-$2})${NAME:-$1}"
+    local FROM="$(branch_name $3)"
+
+    if ! make_branch "$BRANCH" "$FROM"; then
+        exit 1
+    fi
+
+    if detect_type; then
+        store
+    fi
+
+    git checkout "$BRANCH"
+}
+
+library_init

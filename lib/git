@@ -1,0 +1,38 @@
+#!/bin/bash
+
+git_version() {
+    local VERSION=$(git --version)
+    echo ${VERSION//git version/}
+}
+
+git_root_dir() {
+    git rev-parse --show-toplevel
+}
+
+git_has_branch() {
+    git show-ref --quiet --verify "refs/heads/$1"
+}
+
+git_current_branch() {
+    git rev-parse --abbrev-ref "HEAD"
+}
+
+git_current_rev() {
+    git rev-parse "HEAD"
+}
+
+git_has_clean_index() {
+    git diff-index --cached --quiet "HEAD"
+}
+
+git_has_clean_working_tree() {
+    git diff-files --quiet -- && [ -z "$(git ls-files --exclude-standard --others)" ]
+}
+
+git_get_commit_message() {
+    git show -s --format="%s" "${@:-HEAD}"
+}
+
+git_unsafe_commit() {
+    git commit --no-verify -q -m "$@"
+}

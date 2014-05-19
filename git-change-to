@@ -16,12 +16,12 @@ main() {
     fi
 
     BRANCH="$1"
-    if ! has_branch "$BRANCH"; then
+    if ! git_has_branch "$BRANCH"; then
         echo Branch "$BRANCH" does not exist
         exit 1
     fi
 
-    if [ "$(current_branch)" != "$BRANCH" ]; then
+    if [ "$(git_current_branch)" != "$BRANCH" ]; then
         store
         git checkout "$BRANCH"
         recover

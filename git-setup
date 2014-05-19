@@ -1,6 +1,7 @@
 #!/bin/bash
-. boot
 
+IS_SETUP=1
+. boot
 
 main() {
     header

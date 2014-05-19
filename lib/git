@@ -1,5 +1,22 @@
 #!/bin/bash
 
+library_init() {
+    if is_setup; then
+        library_check
+    fi
+}
+
+library_check() {
+    if ! command_exists "git"; then
+        die "You need to have GIT installed"
+    fi
+
+    local MINIMUM_VERSION="1.8"
+    if ! version_compare "$(git_version)" "$MINIMUM_VERSION"; then
+        die "You need GIT $MINIMUM_VERSION at least, but $(git_version) found"
+    fi
+}
+
 git_version() {
     local VERSION=$(git --version)
     echo ${VERSION//git version/}
@@ -36,3 +53,5 @@ git_get_commit_message() {
 git_unsafe_commit() {
     git commit --no-verify -q -m "$@"
 }
+
+library_init

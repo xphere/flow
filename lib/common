@@ -5,12 +5,40 @@ library_init() {
     LIBRARY_DIR="${SCRIPT_DIR#$GITCC_DIR/}"
 }
 
+warn() {
+    echo "$@" >&2
+}
+
+die() {
+    warn "$@"
+    exit 1
+}
+
+command_exists() {
+    which "$@" >/dev/null 2>&1
+}
+
+function_exists() {
+    type -t "$@" >/dev/null 2>&1
+}
+
 load() {
     . "$GITCC_DIR/$@"
 }
 
 load_library() {
     load "$LIBRARY_DIR/$1"
+}
+
+is_setup() {
+    [ -n ${IS_SETUP:=0} ]
+}
+
+version_compare() {
+    local VERSION="$1"
+    local EXPECTED="$2"
+    local LOWER=$(echo -e "$VERSION\n$EXPECTED" | sort -bgt. | head -1)
+    [[ "$LOWER" = "$EXPECTED" ]]
 }
 
 library_init

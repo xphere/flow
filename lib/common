@@ -5,8 +5,16 @@ library_init() {
     LIBRARY_DIR="${SCRIPT_DIR#$GITCC_DIR/}"
 }
 
-warn() {
+stderr() {
     echo "$@" >&2
+}
+
+info() {
+    stderr "[*] $@"
+}
+
+warn() {
+    stderr "[!] $@"
 }
 
 die() {
@@ -39,6 +47,71 @@ version_compare() {
     local EXPECTED="$2"
     local LOWER=$(echo -e "$VERSION\n$EXPECTED" | sort -bgt. | head -1)
     [[ "$LOWER" = "$EXPECTED" ]]
+}
+
+ask() {
+    local QUESTION="$1: "
+    local DEFAULT="${2:-$3}"
+    local ANSWER=""
+
+    if [ -n "$DEFAULT" ]; then
+        QUESTION="$QUESTION[$DEFAULT] "
+    fi
+
+    while [ -z "$ANSWER" ]; do
+        read -p "$QUESTION" ANSWER
+        if [ -z "$ANSWER" ] && [ -n "$DEFAULT" ]; then
+            ANSWER="$DEFAULT"
+        fi
+    done
+
+    echo $ANSWER
+}
+
+choice() {
+    local MESSAGE="$1"
+    local DEFAULT="$2"; shift 2
+    local OPTIONS=("$@")
+    local DEFAULT_OPTION=
+    local ANSWER=
+    local CHOICE=
+
+    stderr "$MESSAGE"
+    for OPTION in "${!OPTIONS[@]}"; do
+        if [ "$DEFAULT" == "${OPTIONS[OPTION]}" ]; then
+            DEFAULT_OPTION="$OPTION"
+        fi
+        stderr " $OPTION) ${OPTIONS[OPTION]}"$([ "$DEFAULT" == "${OPTIONS[OPTION]}" ] && echo ' (by default)')
+    done
+
+    while read -r -p "${PS3:=#?}" ANSWER; do
+        if  [[ "$ANSWER" == "" ]]; then
+            if ! [[ "${DEFAULT_OPTION+isset}" ]]; then
+                continue
+            fi
+            ANSWER="$DEFAULT_OPTION"
+        fi
+
+        if ! in_array "$ANSWER" "${!OPTIONS[@]}"; then
+            warn "Invalid option: $ANSWER ${!OPTIONS[ANSWER]}"
+            continue
+        fi
+        break;
+    done
+
+    echo "${OPTIONS[ANSWER]}"
+}
+
+in_array() {
+	local NEEDLE="$1"; shift
+	local HAYSTACK=("$@")
+	for ITEM in "${HAYSTACK[@]}"; do
+		if [[ "$ITEM" == "$NEEDLE" ]]; then
+			return 0
+		fi
+	done
+
+	return 1
 }
 
 library_init

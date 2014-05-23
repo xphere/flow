@@ -3,12 +3,32 @@
 load_library "git"
 
 library_init() {
+    PLUGIN_DIR="plugin"
     CONFIG_PREFIX="cc"
     CONFIG_BRANCH_PREFIX="prefix"
     CONFIG_BRANCH="branch"
     SAVE_PREFIX="git-cc:save"
     MSG_INDEXED_COMMIT="$SAVE_PREFIX:indexed"
     MSG_MODIFIED_COMMIT="$SAVE_PREFIX:modified"
+}
+
+load_plugin() {
+    local TYPE="$1"
+    local KEY="${2:-$1}"
+    local CONFIG=$(config "$KEY")
+
+    if [ -n "$CONFIG" ]; then
+        CONFIG="$CONFIG"
+    fi
+
+    load "$PLUGIN_DIR/$TYPE/$CONFIG"
+}
+
+list_plugins() {
+    local TYPE="$1"
+    local PREFIX="$PLUGIN_DIR/$TYPE"
+
+    find "$GITCC_DIR/$PLUGIN_DIR/$TYPE" -type f | grep -Po "(?<=/)[^/]+\$" | sort
 }
 
 store() {
@@ -52,7 +72,7 @@ branch_prefix() {
 make_branch() {
     local TO="$1"
     local FROM="$2"
-    git branch -qtu "$TO" "$FROM"
+    git branch -qt "$TO" "$FROM"
 }
 
 detect_type() {

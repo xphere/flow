@@ -7,31 +7,13 @@ main() {
     header
     ask_branches
     ask_branch_prefixes
+    ask_backend
 }
 
 header() {
     echo "Setup your current repository to use git-cc helpers"
     echo "Current repository: $(git_root_dir)"
     echo ""
-}
-
-ask() {
-    local QUESTION="$1: "
-    local DEFAULT="${2:-$3}"
-    local ANSWER=""
-
-    if [ -n "$DEFAULT" ]; then
-        QUESTION="$QUESTION[$DEFAULT] "
-    fi
-
-    while [ -z "$ANSWER" ]; do
-        read -p "$QUESTION" ANSWER
-        if [ -z "$ANSWER" ] && [ -n "$DEFAULT" ]; then
-            ANSWER="$DEFAULT"
-        fi
-    done
-
-    echo $ANSWER
 }
 
 ask_branch_prefix() {
@@ -61,6 +43,17 @@ ask_branch_prefixes() {
 ask_branches() {
     ask_branch "dev" "dev"
     ask_branch "master" "master"
+}
+
+ask_backend() {
+    local PLUGINS=($(list_plugins "backend"))
+    local KEY="backend"
+    local CONFIG="$(config "$KEY")"
+    local CHOICE="$(choice "Choose backend" "$CONFIG" "${PLUGINS[@]}")"
+
+    info "You choose $CHOICE as backend"
+    config "$KEY" "$CHOICE"
+    load_plugin "$KEY"
 }
 
 main "$@"

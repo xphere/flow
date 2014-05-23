@@ -15,25 +15,6 @@ header() {
     echo ""
 }
 
-ask() {
-    local QUESTION="$1: "
-    local DEFAULT="${2:-$3}"
-    local ANSWER=""
-
-    if [ -n "$DEFAULT" ]; then
-        QUESTION="$QUESTION[$DEFAULT] "
-    fi
-
-    while [ -z "$ANSWER" ]; do
-        read -p "$QUESTION" ANSWER
-        if [ -z "$ANSWER" ] && [ -n "$DEFAULT" ]; then
-            ANSWER="$DEFAULT"
-        fi
-    done
-
-    echo $ANSWER
-}
-
 ask_branch_prefix() {
     local TYPE="$1"
     local DEFAULT="$2"

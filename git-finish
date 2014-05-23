@@ -1,0 +1,31 @@
+#!/bin/bash
+. boot
+
+main() {
+    local BRANCH="$(git_current_branch)"
+    local TYPE="$(detect_type "$BRANCH")"
+
+    if [ ! $TYPE ]; then
+        die "Branch $BRANCH is not managed by git-cc"
+    fi
+
+    if ! git_has_clean_index; then
+        die "You have changes in your index, please commit or discard them"
+    fi
+
+    if ! git_has_clean_working_tree; then
+        die "You have changes in your working tree, please commit or discard them"
+    fi
+
+    load_plugin "backend"
+    case "$TYPE" in
+        feature )
+            finish_feature "$BRANCH"
+            ;;
+        hotfix )
+            finish_hotfix "$BRANCH"
+            ;;
+    esac
+}
+
+main "$@"

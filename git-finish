@@ -17,13 +17,15 @@ main() {
         die "You have changes in your working tree, please commit or discard them"
     fi
 
+    local NAME="${BRANCH#$(branch_prefix "$TYPE")}"
+
     load_plugin "backend"
     case "$TYPE" in
         feature )
-            finish_feature "$BRANCH"
+            finish_feature "$BRANCH" "$NAME"
             ;;
         hotfix )
-            finish_hotfix "$BRANCH"
+            finish_hotfix "$BRANCH" "$NAME"
             ;;
     esac
 }

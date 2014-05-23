@@ -6,22 +6,47 @@ if [ ! "$GITCC_DIR" ]; then
 fi
 
 finish_feature() {
-	local CURRENT="$(git_current_branch)"
-	local DEST="$(branch_name dev)"
-	git checkout "$DEST" || die "Can't change back to $DEST branch"
-	git merge --no-ff "$CURRENT" || die "Can't merge $DEST with feature branch $CURRENT"
-	git branch -d "$CURRENT" || die "Can't remove feature branch $CURRENT"
+    local BRANCH="$1"
+    local NAME="$2"
+    local DEST="$(branch_name dev)"
+
+    local_merge "feature" "$BRANCH" "$NAME" "$DEST"
+    local_remove_branch "feature" "$BRANCH" "$NAME"
 }
 
 finish_hotfix() {
-	local CURRENT="$(git_current_branch)"
-	local DEST="$(branch_name dev)"
-	git checkout "$DEST" || die "Can't change back to $DEST branch"
-	git merge --no-ff "$CURRENT" || die "Can't merge $DEST with feature branch $CURRENT"
+    local BRANCH="$1"
+    local NAME="$2"
+    local DEST="$(branch_name dev)"
 
-	DEST="$(branch_name master)"
-	git checkout "$DEST" || die "Can't change back to $DEST branch"
-	git merge --no-ff "$CURRENT" || die "Can't merge $DEST with feature branch $CURRENT"
+    local_merge "hotfix" "$BRANCH" "$NAME" "$(branch_name master)"
+    local_merge "hotfix" "$BRANCH" "$NAME" "$(branch_name dev)"
+    local_remove_branch "hotfix" "$BRANCH" "$NAME"
+}
 
-	git branch -d "$CURRENT" || die "Can't remove feature branch $CURRENT"
+local_merge() {
+    local TYPE="$1"
+    local BRANCH="$2"
+    local NAME="$3"
+    local DEST="$4"
+
+    if ! git checkout "$DEST"; then
+        die "Can't checkout to $DEST branch"
+    fi
+
+    if ! git merge --no-ff "$BRANCH" -m "Merge $TYPE $NAME into $DEST"; then
+        die "Can't merge $TYPE $NAME into $DEST"
+    fi
+    info "Merged $TYPE $NAME into $DEST"
+}
+
+local_remove_branch() {
+    local TYPE="$1"
+    local BRANCH="$2"
+    local NAME="$3"
+
+    if ! git branch -d "$BRANCH"; then
+        die "Can't remove $TYPE branch $NAME"
+    fi
+    info "Removing local $TYPE branch $NAME"
 }

@@ -72,7 +72,7 @@ branch_prefix() {
 make_branch() {
     local TO="$1"
     local FROM="$2"
-    git branch -qtu "$TO" "$FROM"
+    git branch -qt "$TO" "$FROM"
 }
 
 detect_type() {

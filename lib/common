@@ -5,8 +5,16 @@ library_init() {
     LIBRARY_DIR="${SCRIPT_DIR#$GITCC_DIR/}"
 }
 
-warn() {
+stderr() {
     echo "$@" >&2
+}
+
+info() {
+    stderr "[*] $@"
+}
+
+warn() {
+    stderr "[!] $@"
 }
 
 die() {

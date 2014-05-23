@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [ ! "$GITCC_DIR" ]; then
+    echo "Thou shalt not run this plugin directly from shell" >&2
+    exit 1
+fi
+
+finish_feature() {
+	local CURRENT="$(git_current_branch)"
+	local DEST="$(branch_name dev)"
+	git checkout "$DEST" || die "Can't change back to $DEST branch"
+	git merge --no-ff "$CURRENT" || die "Can't merge $DEST with feature branch $CURRENT"
+	git branch -d "$CURRENT" || die "Can't remove feature branch $CURRENT"
+}
+
+finish_hotfix() {
+	local CURRENT="$(git_current_branch)"
+	local DEST="$(branch_name dev)"
+	git checkout "$DEST" || die "Can't change back to $DEST branch"
+	git merge --no-ff "$CURRENT" || die "Can't merge $DEST with feature branch $CURRENT"
+
+	DEST="$(branch_name master)"
+	git checkout "$DEST" || die "Can't change back to $DEST branch"
+	git merge --no-ff "$CURRENT" || die "Can't merge $DEST with feature branch $CURRENT"
+
+	git branch -d "$CURRENT" || die "Can't remove feature branch $CURRENT"
+}

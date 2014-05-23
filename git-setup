@@ -7,6 +7,7 @@ main() {
     header
     ask_branches
     ask_branch_prefixes
+    ask_backend
 }
 
 header() {
@@ -42,6 +43,17 @@ ask_branch_prefixes() {
 ask_branches() {
     ask_branch "dev" "dev"
     ask_branch "master" "master"
+}
+
+ask_backend() {
+    local PLUGINS=($(list_plugins "backend"))
+    local KEY="backend"
+    local CONFIG="$(config "$KEY")"
+    local CHOICE="$(choice "Choose backend" "$CONFIG" "${PLUGINS[@]}")"
+
+    info "You choose $CHOICE as backend"
+    config "$KEY" "$CHOICE"
+    load_plugin "$KEY"
 }
 
 main "$@"

@@ -26,13 +26,7 @@ library_setup() {
 }
 
 github_token() {
-    local TOKEN
-    TOKEN=$(config "$GITHUB_TOKEN" "$@")
-    if [ -n $? ] || [ -z "$TOKEN" ]; then
-        return 1
-    fi
-
-    echo "$TOKEN"
+    config "$GITHUB_TOKEN" "$@"
 }
 
 github_request() {

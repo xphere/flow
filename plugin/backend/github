@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ ! "$GITCC_DIR" ]; then
+    echo "Thou shalt not run this plugin directly from shell" >&2
+    exit 1
+fi
+
+finish_feature() {
+    info "Pushing Feature to Github as a Pull Request"
+}
+
+finish_hotfix() {
+	info "Pushing HOTFIX to Github"
+}

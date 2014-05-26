@@ -16,8 +16,21 @@ library_check() {
 }
 
 library_setup() {
-    if ! TOKEN=$(github_token); then
-        load_library "github-auth"
+    local TOKEN
+    local RESULT
+
+    load_library "github-auth"
+
+    if TOKEN=$(github_token); then
+        info "Token found, revalidating..."
+        if ! github_check_token; then
+            TOKEN=
+            github_token "$TOKEN"
+            warn "Current token is not valid anymore"
+        fi
+    fi
+
+    if [ -z "$TOKEN" ]; then
         if ! TOKEN=$(github_authorize); then
             die "You must authorize git-cc for GitHub access"
         fi

@@ -38,6 +38,10 @@ github_auth_already_exists() {
     echo "$@" | grep -q '"code": "already_exists"'
 }
 
+github_check_token() {
+    http_is_success "$(github_request GET "/")"
+}
+
 github_auth_request() {
     local URL="/authorizations"
     local BODY='{"note": "'$GITHUB_NOTE'", "scopes":["repo", "notifications"]}'

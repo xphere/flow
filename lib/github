@@ -55,7 +55,7 @@ github_request() {
     local TOKEN="$(github_token)"
     if [ -n "$TOKEN" ]; then
         LOGIN="$TOKEN:x-oauth-basic"
-    else
+    elif [ -n "$USER" ]; then
         LOGIN="$USER:$PASSWORD"
     fi
 

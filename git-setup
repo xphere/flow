@@ -8,12 +8,17 @@ main() {
     ask_branches
     ask_branch_prefixes
     ask_backend
+    footer
 }
 
 header() {
-    echo "Setup your current repository to use git-cc helpers"
-    echo "Current repository: $(git_root_dir)"
-    echo ""
+    stderr "Setup your current repository to use git-cc helpers"
+    stderr "Current repository: $(git_root_dir)"
+    stderr
+}
+
+footer() {
+    stderr "Your project is now configured for git-cc usage"
 }
 
 ask_branch_prefix() {

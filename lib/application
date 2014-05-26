@@ -1,7 +1,5 @@
 #!/bin/bash
 
-load_library "git"
-
 library_init() {
     PLUGIN_DIR="plugin"
     CONFIG_PREFIX="cc"
@@ -10,6 +8,8 @@ library_init() {
     SAVE_PREFIX="git-cc:save"
     MSG_INDEXED_COMMIT="$SAVE_PREFIX:indexed"
     MSG_MODIFIED_COMMIT="$SAVE_PREFIX:modified"
+
+    load_library "git"
 }
 
 load_plugin() {

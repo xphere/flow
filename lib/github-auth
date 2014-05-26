@@ -50,7 +50,7 @@ github_auth_request() {
 
     if http_is_unauthorized "$RESPONSE" && github_auth_needs_otp "$RESPONSE"; then
         info "Two-factor OTP code required"
-        read -p "Please provide OTP code: " OTPCODE
+        read -p " Please provide OTP code: " OTPCODE
         PARAMETERS+=("X-GitHub-OTP: $OTPCODE")
         RESPONSE=$(github_request POST "${PARAMETERS[@]}")
     fi

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+load_library "php"
+
+library_init() {
+    if is_setup; then
+        library_check
+    fi
+}
+
+library_check() {
+    if ! command_exists php; then
+        die "You must have PHP installed for the JSON plugin to work"
+    fi
+
+    if ! version_compare "$(php_version)" 5.3; then
+        die "Go install some real PHP"
+    fi
+
+    if ! php_support "json" "enabled"; then
+        die "Your PHP version must have JSON support"
+    fi
+}
+
+json_query() {
+    php_exec "\$input=json_decode(file_get_contents('php://stdin'));$@"
+}
+
+library_init

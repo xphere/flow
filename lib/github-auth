@@ -1,0 +1,80 @@
+#!/bin/bash
+
+GITHUB_NOTE="git-cc token"
+
+library_init() {
+    load_library "http"
+    load_library "json"
+}
+
+github_authorize() {
+    local USER
+    local PASSWORD
+    info "Please authorize this app for GitHub access"
+
+    read -p " GitHub username: " USER
+    if [ -z "$USER" ]; then
+        die "You must enter your GitHub username"
+    fi
+
+    read -sp " GitHub password: " PASSWORD
+    stderr
+    if [ -z "$PASSWORD" ]; then
+        die "You must enter your GitHub password"
+    fi
+
+    if ! RESPONSE=$(github_auth_request); then
+        die "Error while accessing your GitHub account"
+    fi
+
+    github_auth_parse_token "$RESPONSE"
+}
+
+github_auth_needs_otp() {
+    echo "$@" | grep -Eq "^X-GitHub-OTP: required;"
+}
+
+github_auth_already_exists() {
+    echo "$@" | grep -q '"code": "already_exists"'
+}
+
+github_auth_request() {
+    local URL="/authorizations"
+    local BODY='{"note": "'$GITHUB_NOTE'", "scopes":["repo", "notifications"]}'
+    local PARAMETERS=("$URL" "$BODY")
+    local RESPONSE
+
+    if ! RESPONSE=$(github_request POST "${PARAMETERS[@]}"); then
+        return 1
+    fi
+
+    if http_is_unauthorized "$RESPONSE" && github_auth_needs_otp "$RESPONSE"; then
+        info "Two-factor OTP code required"
+        read -p "Please provide OTP code: " OTPCODE
+        PARAMETERS+=("X-GitHub-OTP: $OTPCODE")
+        RESPONSE=$(github_request POST "${PARAMETERS[@]}")
+    fi
+
+    if github_auth_already_exists "$RESPONSE"; then
+        info "Authorization code already exists, getting old token"
+        RESPONSE=$(github_request GET "${PARAMETERS[@]}")
+    fi
+
+    if ! http_is_success "$RESPONSE"; then
+        die "GitHub authorization request failed"
+    fi
+
+    echo "$RESPONSE"
+}
+
+github_auth_parse_token() {
+    local RESPONSE="$@"
+    local QUERY='
+        foreach ($input as $auth) if ($auth->note === "'$GITHUB_NOTE'") {
+            die($auth->token);
+        }
+    ';
+    echo "$RESPONSE" | http_body | json_query "$QUERY"
+}
+
+library_init

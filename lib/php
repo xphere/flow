@@ -1,0 +1,29 @@
+#!/bin/bash
+
+library_init() {
+    if is_setup; then
+        library_check
+    fi
+}
+
+library_check() {
+    if ! command_exists php; then
+        die "You must have PHP installed"
+    fi
+}
+
+php_version() {
+    php_exec "echo phpversion();"
+}
+
+php_info() {
+    php -i
+}
+
+php_support() {
+    php_info | grep -qi "$1 support => $2"
+}
+
+php_exec() {
+    php -r "$@"
+}

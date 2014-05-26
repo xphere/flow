@@ -1,0 +1,13 @@
+#!/bin/bash
+
+http_is_success() {
+    echo "$*" | grep -Eq "^HTTP/[^ ]+ 2"
+}
+
+http_is_unauthorized() {
+    echo "$*" | grep -Eq "^HTTP/[^ ]+ 401"
+}
+
+http_body() {
+	sed '1,/^\r\?$/ d'
+}

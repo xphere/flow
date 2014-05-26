@@ -5,6 +5,8 @@ if [ ! "$GITCC_DIR" ]; then
     exit 1
 fi
 
+load_library "github"
+
 finish_feature() {
     info "Pushing Feature to Github as a Pull Request"
 }

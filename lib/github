@@ -1,0 +1,40 @@
+#!/bin/bash
+
+library_init() {
+    GITHUB_TOKEN="github.token"
+
+    if is_setup; then
+        library_check
+    fi
+}
+
+library_check() {
+    if ! command_exists curl; then
+        die "You must have cUrl installed to use the library GitHub"
+    fi
+}
+
+github_request() {
+    local METHOD="$1"
+    local URL="https://api.github.com/${2/#\//}"
+    local BODY="$3"; shift 3
+    local CUSTOM_HEADERS=("$@")
+    local OPTIONS=(-s -S -D "-" -X "$METHOD")
+    local HEADERS=(-H "Accept: application/vnd.github.v3+full;json")
+
+    if [ -n "${CUSTOM_HEADERS[*]}" ]; then
+        for HEADER in "${CUSTOM_HEADERS[@]}"; do
+            if [ -n "$HEADER" ]; then
+                HEADERS+=(-H "$HEADER")
+            fi
+        done
+    fi
+
+    if [ -n "$BODY" ]; then
+        OPTIONS+=(-d "$BODY")
+    fi
+
+    curl "$URL" "${HEADERS[@]}" "${OPTIONS[@]}"
+}
+
+library_init

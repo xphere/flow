@@ -39,7 +39,7 @@ load_library() {
 }
 
 is_setup() {
-    [ -n ${IS_SETUP:=0} ]
+    [ -n "${IS_SETUP:=}" ]
 }
 
 version_compare() {

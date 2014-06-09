@@ -2,11 +2,11 @@
 . boot
 
 usage() {
-    echo "Change safely between branches, saving current state"
-    echo ""
-    echo "Usage:"
-    echo "  git change-to <branch-name>"
-    echo ""
+    stderr "Change safely between branches, saving current state"
+    stderr
+    stderr "Usage:"
+    stderr "  git change-to <branch-name>"
+    stderr
 }
 
 main() {
@@ -17,8 +17,7 @@ main() {
 
     BRANCH="$1"
     if ! git_has_branch "$BRANCH"; then
-        echo Branch "$BRANCH" does not exist
-        exit 1
+        die Branch "$BRANCH" does not exist
     fi
 
     if [ "$(git_current_branch)" != "$BRANCH" ]; then

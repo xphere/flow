@@ -5,6 +5,12 @@ library_init() {
 
     if is_setup; then
         library_check
+    fi
+
+    load_library "http"
+    load_library "json"
+
+    if is_setup; then
         library_setup
     fi
 }
@@ -47,7 +53,7 @@ github_request() {
     local URL="https://api.github.com/${2/#\//}"
     local BODY="$3"; shift 3
     local CUSTOM_HEADERS=("$@")
-    local OPTIONS=(-s -S -D "-" -X "$METHOD")
+    local OPTIONS=(-s -S -D- -X "$METHOD")
     local HEADERS=(-H "Accept: application/vnd.github.v3+full;json")
     local LOGIN=
 
@@ -74,7 +80,26 @@ github_request() {
         OPTIONS+=(-d "$BODY")
     fi
 
-    curl "$URL" "${HEADERS[@]}" "${OPTIONS[@]}"
+    curl "$URL" "${HEADERS[@]}" "${OPTIONS[@]}" | sed 's/\r \?/\n/g'
+}
+
+github_issues() {
+    github_parse_issues $(github_request_issues)
+}
+
+github_request_issues() {
+    github_request GET repos/ofertix/ofertix2/issues
+}
+
+github_parse_issues() {
+    local RESPONSE="$@"
+    local QUERY='
+        foreach ($input as $token) {
+            echo $token->number, PHP_EOL;
+        }
+    ';
+    echo "$RESPONSE"
+#    echo "$RESPONSE" | http_body | json_query "$QUERY"
 }
 
 library_init

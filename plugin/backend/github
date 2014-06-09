@@ -9,8 +9,16 @@ load_library "github"
 
 finish_feature() {
     info "Pushing Feature to Github as a Pull Request"
+
+    git_get_track "$(branch_name "dev")"
+#    github_create_pr
 }
 
 finish_hotfix() {
 	info "Pushing HOTFIX to Github"
+}
+
+list_issues() {
+    info "List issues"
+    github_issues
 }

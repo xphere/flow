@@ -1,0 +1,8 @@
+#!/bin/bash -x
+. boot
+
+main() {
+    git pull --rebase
+}
+
+main "$@"

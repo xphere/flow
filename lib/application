@@ -88,7 +88,7 @@ detect_type() {
     return 1
 }
 
-new_branch_and_checkout() {
+create_and_checkout_branch() {
     local BRANCH="$(branch_prefix ${TYPE:-$2})${NAME:-$1}"
     local FROM="$(branch_name $3)"
 

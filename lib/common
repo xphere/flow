@@ -69,8 +69,8 @@ ask() {
 }
 
 choice() {
-    local MESSAGE="$1"
-    local DEFAULT="$2"; shift 2
+    local MESSAGE="$1"; shift
+    local DEFAULT="$1"; shift
     local OPTIONS=("$@")
     local DEFAULT_OPTION=
     local ANSWER=

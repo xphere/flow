@@ -21,7 +21,7 @@ library_setup() {
 
     load_library "github-auth"
 
-    if TOKEN=$(github_token); then
+    if TOKEN="$(github_token)"; then
         info "Token found, revalidating..."
         if ! github_check_token; then
             TOKEN=
@@ -31,7 +31,7 @@ library_setup() {
     fi
 
     if [ -z "$TOKEN" ]; then
-        if ! TOKEN=$(github_authorize); then
+        if ! TOKEN="$(github_authorize)"; then
             die "You must authorize git-cc for GitHub access"
         fi
         github_token "$TOKEN"
@@ -43,11 +43,11 @@ github_token() {
 }
 
 github_request() {
-    local METHOD="$1"
-    local URL="https://api.github.com/${2/#\//}"
-    local BODY="$3"; shift 3
+    local METHOD="$1"; shift
+    local URL="https://api.github.com/${1/#\//}"; shift
+    local BODY="$1"; shift
     local CUSTOM_HEADERS=("$@")
-    local OPTIONS=(-s -S -D "-" -X "$METHOD")
+    local OPTIONS=(-s -S -D - -X "$METHOD")
     local HEADERS=(-H "Accept: application/vnd.github.v3+full;json")
     local LOGIN=
 

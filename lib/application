@@ -96,7 +96,7 @@ new_branch_and_checkout() {
         exit 1
     fi
 
-    if detect_type; then
+    if detect_type > /dev/null; then
         store
     fi
 

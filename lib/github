@@ -5,6 +5,13 @@ library_init() {
 
     if is_setup; then
         library_check
+    fi
+
+    load_library "http"
+    load_library "curl"
+    load_library "json"
+
+    if is_setup; then
         library_setup
     fi
 }
@@ -75,6 +82,24 @@ github_request() {
     fi
 
     curl "$URL" "${HEADERS[@]}" "${OPTIONS[@]}"
+}
+
+github_issues() {
+    github_parse_issues "$(github_request_issues)"
+}
+
+github_request_issues() {
+    github_request GET repos/ofertix/ofertix2/issues
+}
+
+github_parse_issues() {
+    local RESPONSE="$@"
+    local QUERY='
+        foreach ($input as $token) {
+            echo $token->number, PHP_EOL;
+        }
+    ';
+    echo "$RESPONSE" | http_body | json_query "$QUERY"
 }
 
 library_init

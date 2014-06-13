@@ -1,0 +1,14 @@
+#!/bin/bash
+. boot
+
+main() {
+    load_plugin "backend"
+
+    if ! function_exists list_issues; then
+        die Your current backend does not support issues
+    fi
+
+    list_issues
+}
+
+main "$@"

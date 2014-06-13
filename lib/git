@@ -54,4 +54,16 @@ git_unsafe_commit() {
     git commit --no-verify -q -m "$@"
 }
 
+git_set_track() {
+    local BRANCH="$1"
+    local REMOTE="$2"
+    local REMOTE_BRANCH="${3:-$1}"
+    git branch "$BRANCH" -u "$REMOTE/$REMOTE_BRANCH" >&2
+}
+
+git_get_track() {
+    local BRANCH="${1}"
+    git rev-parse --abbrev-ref "${BRANCH}@{u}"
+}
+
 library_init

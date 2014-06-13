@@ -1,0 +1,15 @@
+#!/bin/bash
+
+library_init() {
+    if is_setup; then
+        library_check
+    fi
+}
+
+library_check() {
+    if ! command_exists "curl"; then
+        die "You need to have curl installed"
+    fi
+}
+
+library_init
